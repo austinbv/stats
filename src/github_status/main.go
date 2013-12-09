@@ -16,10 +16,6 @@ type Data struct {
 	Limit int
 }
 
-type Repo struct {
-	Full_name string
-}
-
 func getLanguageForRep(repo string) map[string]int {
 	languages := make(map[string]int)
 	resp, err := http.Get(addUserInfo(fmt.Sprintf("https://api.github.com/repos/%s/languages", repo)))
@@ -51,7 +47,7 @@ func getAllRepos(c chan Data) {
 			}
 		}
 
-		next = header.Next
+		next = header.Next.String()
 	}
 }
 
@@ -61,22 +57,7 @@ func addUserInfo(url_string string) string {
 	return parsed_url.String()
 }
 
-func getRepos(url string) ([]Repo, GitHubHeader) {
-	resp, err := http.Get(url)
-	if err != nil {
-		panic(err)
-	}
 
-	body, _ := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	var repos []Repo
-	json.Unmarshal(body, &repos)
-
-	return repos, github.ParseHeader(resp.Header)
-}
 
 func clear() {
 	for i := 0; i < 500; i++ {
